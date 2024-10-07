@@ -6,7 +6,7 @@ FROM node:18
 WORKDIR /app
 
 # Step 3: Copy package.json and package-lock.json (or yarn.lock) files
-COPY package*.json ./
+COPY package.json ./
 
 
 # Step 4: Install dependencies
