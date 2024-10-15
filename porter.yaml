@@ -18,3 +18,29 @@ build:
   - heroku/nodejs
 autoRollback:
   enabled: false
+previews:
+  - name: test
+    services:
+    - name: web
+      run: node src/index.js
+      type: web
+      instances: 1
+      cpuCores: 0.16
+      ramMegabytes: 300
+      terminationGracePeriodSeconds: 30
+      port: 3000
+      sleep: false
+    build:
+      context: ./
+      method: pack
+      builder: heroku/buildpacks:20
+      buildpacks:
+      - heroku/nodejs
+    datastores:
+        - region: us-east-1
+          name": preview-clone
+          awsRdsKind:
+            databaseName: postgres
+            masterUsername": postgres
+            allocatedStorageGigabytes: 30
+            instanceClass": db.t4g.medium
