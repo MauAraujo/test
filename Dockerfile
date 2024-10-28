@@ -1,28 +1,24 @@
-# Step 1: Set the base image. Here, we're using the official Node.js 16 Alpine image as it's lightweight.
-FROM node:18
+# syntax=docker/dockerfile:1
 
+FROM golang:1.19
 
-# Step 2: Set the working directory inside the container
+# Set destination for COPY
 WORKDIR /app
 
-# Step 3: Copy package.json and package-lock.json (or yarn.lock) files
-COPY package.json ./
+# Download Go modules
+COPY go.mod go.sum ./
+RUN go mod download
 
+# Copy the source code. Note the slash at the end, as explained in
+# https://docs.docker.com/reference/dockerfile/#copy
+COPY *.go ./
 
-# Step 4: Install dependencies
-RUN npm install
+# Build
+RUN CGO_ENABLED=0 GOOS=linux go build -o /docker-gs-ping
 
-# Step 5: Copy the rest of your app's source code
-# COPY src .
-COPY . /app
-
-# Step 6: Compile TypeScript to JavaScript.
-# Note: Your package.json must have a "build" script that compiles TypeScript.
-RUN npm run build
-
-# Step 7: Expose the port your app runs on
-EXPOSE 3000
-
-# Step 8: Define the command to run your app using the compiled JavaScript
-# Note: Adjust "dist/index.js" based on your output directory and main file name
-CMD [ "node", "dist/index.js" ]
+# Optional:
+# To bind to a TCP port, runtime parameters must be supplied to the docker command.
+# But we can document in the Dockerfile what ports
+# the application is going to listen on by default.
+# https://docs.docker.com/reference/dockerfile/#expose
+EXPOSE 8080
