@@ -22,7 +22,3 @@ RUN npm run build
 
 # Step 7: Expose the port your app runs on
 EXPOSE 3000
-
-# Step 8: Define the command to run your app using the compiled JavaScript
-# Note: Adjust "dist/index.js" based on your output directory and main file name
-CMD [ "node", "dist/index.js" ]
