@@ -4,12 +4,15 @@ import (
 	"net/http"
 	"os"
 	"time"
+
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"github.com/labstack/gommon/log"
 )
 
 func startHeartbeat(e *echo.Echo) {
-	ticker := time.NewTicker(5 * time.Minute)
+	ticker := time.NewTicker(5 * time.Second)
+
 	go func() {
 		for range ticker.C {
 			e.Logger.Info("Service heartbeat - server is running")
@@ -21,6 +24,8 @@ func main() {
 	e := echo.New()
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
+
+	e.Logger.SetLevel(log.INFO)
 
 	// Start the heartbeat logging
 	startHeartbeat(e)
@@ -35,7 +40,7 @@ func main() {
 
 	httpPort := os.Getenv("PORT")
 	if httpPort == "" {
-		httpPort = "8080"
+		httpPort = "8083"
 	}
 
 	e.Logger.Info("Starting server on port " + httpPort)
