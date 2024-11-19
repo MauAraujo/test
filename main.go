@@ -3,17 +3,27 @@ package main
 import (
 	"net/http"
 	"os"
-
+	"time"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
 
+func startHeartbeat(e *echo.Echo) {
+	ticker := time.NewTicker(5 * time.Minute)
+	go func() {
+		for range ticker.C {
+			e.Logger.Info("Service heartbeat - server is running")
+		}
+	}()
+}
+
 func main() {
-
 	e := echo.New()
-
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
+
+	// Start the heartbeat logging
+	startHeartbeat(e)
 
 	e.GET("/", func(c echo.Context) error {
 		return c.HTML(http.StatusOK, "Hello, Docker!! <3")
@@ -28,6 +38,7 @@ func main() {
 		httpPort = "8080"
 	}
 
+	e.Logger.Info("Starting server on port " + httpPort)
 	e.Logger.Fatal(e.Start(":" + httpPort))
 }
 
