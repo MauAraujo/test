@@ -31,7 +31,7 @@ func main() {
 	startHeartbeat(e)
 
 	e.GET("/", func(c echo.Context) error {
-		return c.HTML(http.StatusOK, "Hello, Docker!! <3")
+		return c.HTML(http.StatusOK, "Hello, Docker! <3")
 	})
 
 	e.GET("/health", func(c echo.Context) error {
