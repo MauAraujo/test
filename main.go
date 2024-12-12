@@ -11,7 +11,7 @@ import (
 )
 
 func startHeartbeat(e *echo.Echo) {
-	ticker := time.NewTicker(5 * time.Second)
+	ticker := time.NewTicker(6 * time.Second)
 
 	go func() {
 		for range ticker.C {
