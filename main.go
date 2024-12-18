@@ -30,7 +30,7 @@ func main() {
 	// Start the heartbeat logging
 	startHeartbeat(e)
 
-	e.GET("/", func(c echo.Context) error {
+	e.GET("sd/", func(c echo.Context) error {
 		return c.HTML(http.StatusOK, "Hello, Docker!! <3")
 	})
 
