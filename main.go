@@ -40,7 +40,7 @@ func main() {
 
 	httpPort := os.Getenv("PORT")
 	if httpPort == "" {
-		httpPort = "8083"
+		httpPort = "8082"
 	}
 
 	e.Logger.Info("Starting server on port " + httpPort)
