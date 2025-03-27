@@ -15,7 +15,7 @@ func startHeartbeat(e *echo.Echo) {
 
 	go func() {
 		for range ticker.C {
-			e.Logger.Info("Service heartbeat - server is running...")
+			e.Logger.Info("Service heartbeat - sefrver is running...")
 		}
 	}()
 }
