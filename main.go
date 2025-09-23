@@ -20,6 +20,36 @@ func startHeartbeat(e *echo.Echo) {
 	}()
 }
 
+// checkMountPath verifies that a directory exists and is writable.
+// It does this by creating and then deleting a temporary file.
+func checkMountPath(path string, logger echo.Logger) {
+	logger.Infof("Checking mount path at: %s", path)
+
+	// 1. Check if the path exists and is a directory.
+	info, err := os.Stat(path)
+	if os.IsNotExist(err) {
+		logger.Fatalf("Mount path does not exist: %s", path)
+	}
+	if !info.IsDir() {
+		logger.Fatalf("Mount path is not a directory: %s", path)
+	}
+
+	// 2. Check if the path is writable by creating a temporary file.
+	tmpFile := filepath.Join(path, ".tmp-write-check")
+	if err := os.WriteFile(tmpFile, []byte("test"), 0600); err != nil {
+		logger.Fatalf("Mount path is not writable: %s. Error: %v", path, err)
+	}
+
+	// 3. Clean up the temporary file.
+	if err := os.Remove(tmpFile); err != nil {
+		// This is not a fatal error, but we should log it.
+		logger.Warnf("Could not remove temporary check file: %s. Error: %v", tmpFile, err)
+	}
+
+	logger.Infof("Successfully verified mount path is available and writable: %s", path)
+}
+
+
 func main() {
 	e := echo.New()
 	e.Use(middleware.Logger())
@@ -27,6 +57,13 @@ func main() {
 
 	e.Logger.SetLevel(log.INFO)
 
+	mountPath := os.Getenv("MOUNT_PATH")
+	if mountPath == "" {
+		e.Logger.Fatal("MOUNT_PATH environment variable not set. Exiting.")
+	}
+	// Run the check. This will call log.Fatal and exit if it fails.
+	checkMountPath(mountPath, e.Logger)
+	
 	// Start the heartbeat logging
 	startHeartbeat(e)
 
